@@ -1,0 +1,4 @@
+devnotes.*
+.env
+*__pycache__*
+*.log
