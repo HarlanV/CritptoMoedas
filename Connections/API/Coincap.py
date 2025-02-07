@@ -92,6 +92,8 @@ class CoincapAPI():
             'Accept-Encoding': 'gzip',  # or 'deflate' (decide later)
         }
 
+        if self.key:
+            headers["Authorization"] = f"Bearer {self.key}"
         response = requests.get(get_url, headers=headers)
         logging = self.logger()
 
@@ -116,7 +118,10 @@ class CoincapAPI():
         headers = {
             'Accept-Encoding': 'gzip',  # or 'deflate' (decide later)
         }
-
+        
+        if self.key:
+            headers["Authorization"] = f"Bearer {self.key}"
+        
         response = requests.get(get_url, headers=headers)
         logging = self.logger
 
@@ -159,6 +164,8 @@ class CoincapAPI():
             'Accept-Encoding': 'gzip',  # or 'deflate' (decide later)
         }
 
+        if self.key:
+            headers["Authorization"] = f"Bearer {self.key}"
         response = requests.get(get_url, headers=headers)
         logging = self.logger
 
@@ -207,6 +214,9 @@ class CoincapAPI():
         headers = {
             'Accept-Encoding': 'gzip',  # or 'deflate' (decide later)
         }
+
+        if self.key:
+            headers["Authorization"] = f"Bearer {self.key}"
 
         response = requests.get(get_url, headers=headers)
         logging = self.logger
@@ -283,6 +293,9 @@ class CoincapAPI():
             'Accept-Encoding': 'gzip',  # or 'deflate' (decide later)
         }
 
+        if self.key:
+            headers["Authorization"] = f"Bearer {self.key}"
+
         response = requests.get(get_url, headers=headers)
         logging = self.logger
 
@@ -318,6 +331,9 @@ class CoincapAPI():
         headers = {
             'Accept-Encoding': 'gzip',  # or 'deflate' (decide later)
         }
+
+        if self.key:
+            headers["Authorization"] = f"Bearer {self.key}"
 
         response = requests.get(get_url, headers=headers)
         logging = self.logger
@@ -372,12 +388,9 @@ class CoincapAPI():
             'Accept-Encoding': 'gzip',  # or 'deflate' (decide later)
         }
 
-        teste = f"""
+        if self.key:
+            headers["Authorization"] = f"Bearer {self.key}"
 
-            {get_url}
-
-        """
-        print(teste)
         response = requests.get(get_url, headers=headers)
         logging = self.logger
 
