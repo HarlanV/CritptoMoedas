@@ -3,11 +3,15 @@ from Connections.DW.BigQuery import ExportTableBQ
 from Connections.API.Coincap import CoincapAPI
 import pandas as pd
 from datetime import datetime
-
+import logging
 import time
 
 engine = MySQLConnection().get_engine()
 gcp_key_path = 'chave-bq.json'
+logging.basicConfig(filename='tables.log', level=logging.INFO, 
+                    format='%(asctime)s - %(levelname)s - %(message)s', filemode='a')
+
+logger = logging.getLogger(__name__)
 
 def persist_table_sql(df:pd.DataFrame, table_name:str, if_exists):
     if df.shape[0] == 0:
@@ -17,7 +21,10 @@ def persist_table_sql(df:pd.DataFrame, table_name:str, if_exists):
     df['processing_date'] = datetime.now()
     try:
         df.to_sql(table_name, con=engine, if_exists=if_exists, index=False)
+        logger.info(f"Tabela {table_name} no banco sql foi atualizada - Sucesso")
+        
     except Exception as e:
+        logger.info(f"Tabela {table_name} no banco sql teve falha ao ser atualizada - Falha")
         message= f""" Falha ao salvar a tabela {table_name}!!
         Erro:
         {e}
@@ -35,7 +42,10 @@ def persist_table_gcp(df:pd.DataFrame, table_name:str, if_exists):
 
     try:
         ExportTableBQ(gcp_key_path).export_table(df,table_name)
+        logger.info(f"Tabela {table_name} no BigQuery foi atualizada - Sucesso")
     except Exception as e:
+        logger.info(f"Tabela {table_name} no BigQuery teve falha ao ser atualizada - Falha")
+
         message= f""" Falha ao salvar a tabela {table_name}!!
         Erro:
         {e}
@@ -46,6 +56,7 @@ def persist_table_gcp(df:pd.DataFrame, table_name:str, if_exists):
 def persist_table(df:pd.DataFrame, table_name:str, if_exists='append'):
     return persist_table_sql(df, table_name, if_exists)
     return persist_table_gcp(df, table_name, if_exists)
+
 
 def import_market():
     api = CoincapAPI()
@@ -83,11 +94,11 @@ def import_asset_tables():
     assets_lists = df['id'].unique()
     if_existis = 'replace'
     for asset in assets_lists:
-        response = api.get_assets(asset, resource, if_existis)
+        response = api.get_assets(asset, resource)
         df = response['data']
         name_table = "raw_history"
         if df.shape[0] != 0:
-            persist_table(df, name_table)
+            persist_table(df, name_table, if_existis)
             print(f"Tabela {resource} da {asset} armazenada!")
         else:
             print(f"Tabela {resource} da {asset} vazia!")
